@@ -94,15 +94,17 @@ function draw() {
 }
 
 function toggleMusica() {
+    userStartAudio();  // 🔹 Esto desbloquea el audio en iOS/Safari
+
     if (musicaIniciada) {
-        sonido.stop();  // 🔹 Usa stop() en lugar de pause() para reiniciar la canción cuando se active de nuevo
+        sonido.stop();  // 🔹 Reinicia la canción desde el principio al detenerla
         musicaIniciada = false;
         botonMusica.html("Tócame");
         botonMusica.style("background-color", "#8B0000");
     } else {
-        userStartAudio(); // 🔹 Necesario para desbloquear audio en Safari/iOS
+        sonido.stop();   // 🔹 Asegura que la canción empiece desde el inicio
         sonido.setVolume(0.5);
-        sonido.loop();  // 🔹 Solo usa loop(), sin play() para evitar el ciclo
+        sonido.play();   // 🔹 En vez de loop(), usa play() para iniciar correctamente en iOS
         musicaIniciada = true;
         botonMusica.html("Te amo");
         botonMusica.style("background-color", "#800080");
