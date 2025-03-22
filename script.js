@@ -13,7 +13,13 @@ let cumplidos = [
     "Te amo mucho Camila! ❤️"
 ];
 
-let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#9400D3"];
+let coloresCorazon = [
+    [255, 105, 180],  // 🔹 Rosa (#FF69B4)
+    [255, 20, 147],   // 🔹 Rosa fuerte (#FF1493)
+    [220, 20, 60],    // 🔹 Rojo oscuro (#DC143C)
+    [255, 69, 0],     // 🔹 Naranja intenso (#FF4500)
+    [148, 0, 211]     // 🔹 Púrpura oscuro (#9400D3)
+];
 let mensajeActual = "";
 let mensajeX, mensajeY;
 let colorCorazon;
@@ -81,7 +87,7 @@ function draw() {
     fill("white");
     textSize(18);
     textAlign(LEFT, TOP);
-    text(`Cada salto, un Beso: ${contadorSaltos}`, imgX + 20, imgY + 10);
+    text(`Cada salto, un Beso: ${contadorSaltos}`, imgX + 20, imgY + 30);
 }
 
 let musicaIniciada = false;
@@ -137,29 +143,28 @@ function touchStarted() {
 
 function mostrarCumplido() {
     mensajeActual = random(cumplidos);
-    colorCorazon = random(coloresCorazon);
-    colorTexto = "white";
+    let baseColor = random(coloresCorazon);
+    colorCorazon = color(baseColor[0], baseColor[1], baseColor[2], 180); // 🔹 Mantiene el color y agrega transparencia
 
-    // 🔹 Ajustar la posición del corazón para evitar el texto de arriba
-    let margenSuperior = imgY + 50; // 🔹 Evita que los corazones aparezcan muy arriba
-    let margenInferior = imgY + imgHeight * 0.6; // 🔹 Permite que los corazones aparezcan más abajo
-
+    let margenSuperior = imgY + 80;
+    let margenInferior = imgY + imgHeight * 0.6;
     mensajeX = random(imgX + imgWidth * 0.2, imgX + imgWidth * 0.8);
-    mensajeY = random(margenSuperior, margenInferior); // 🔹 Limita la posición en Y
+    mensajeY = random(margenSuperior, margenInferior);
 }
 
 
 function drawHeart(x, y, size, color) {
-    fill(color);
+    fill(color); // 🔹 Se usará el color con transparencia correctamente definido
     noStroke();
     beginShape();
     for (let i = 0; i < TWO_PI; i += 0.1) {
-        let px = x + size * 18 * pow(sin(i), 3); // 🔹 Hacer el corazón más ancho
-        let py = y - size * (12 * cos(i) - 5 * cos(2 * i) - 2 * cos(3 * i) - cos(4 * i)); // 🔹 Hacerlo un poco más corto
+        let px = x + size * 18 * pow(sin(i), 3);
+        let py = y - size * (12 * cos(i) - 5 * cos(2 * i) - 2 * cos(3 * i) - cos(4 * i));
         vertex(px, py);
     }
     endShape(CLOSE);
 }
+
 
 
 function ajustarFondo() {
@@ -203,7 +208,7 @@ function splitText(text, maxWidth) {
 class Capibara {
     constructor(imagen) {
         this.img = imagen;
-        this.x = imgX + 10;
+        this.x = imgX -100;
         this.y = imgY + imgHeight - 120;
         this.velX = 2;
         this.velY = 0;
@@ -222,7 +227,7 @@ class Capibara {
     mover() {
         this.x += this.velX;
         if (this.x > imgX + imgWidth) {
-            this.x = imgX + 10; // Reinicia cuando sale del área visible
+            this.x = imgX  -100; // Reinicia cuando sale del área visible
             this.img = random(capibaraImgs); // Cambia de imagen al reiniciar
         }
     }
