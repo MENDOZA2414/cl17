@@ -1,10 +1,10 @@
-let video;
+let fondo;
 let sonido;
-let capibaras = [];
 let capibaraImgs = [];
+let capibara;
 let cumplidos = [
-    "\u00a1Eres muy hermosa! 😍",
-    "Amo Tu sonrisa! 😊",
+    "¡Eres muy hermosa! 😍",
+    "Amo tu sonrisa! 😊",
     "Eres increíble! 😘",
     "Tienes un corazón muy bonito! 🤍",
     "Siempre alegras mi día! ✨",
@@ -12,30 +12,20 @@ let cumplidos = [
     "Siempre haces que todo sea mejor! 😎",
     "Te amo mucho Camila! ❤️"
 ];
+
 let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#FFD700", "#9400D3"];
-let suelo;
 let mensajeActual = "";
 let mensajeX, mensajeY;
 let colorCorazon;
-let colorTexto;
-let videoCargado = false;
+let colorTexto = "white";
 let tamanoCorazon = 5;
-let capibaraTamano = 110;
+let capibaraTamano = 90;
 let botonMusica;
+let contadorSaltos = 0;
+let imgX, imgY, imgWidth, imgHeight;
 
 function preload() {
-    video = createVideo("fondo.mp4", () => {
-        videoCargado = true;
-        video.loop();
-        video.volume(0.5);
-        video.show();
-    });
-    
-    video.attribute("playsinline", "true");
-    video.attribute("muted", "true");
-    video.play();
-    video.hide();
-
+    fondo = loadImage("fondo.jpg");
     sonido = loadSound("musica.mp3");
 
     for (let i = 0; i < 7; i++) {
@@ -45,15 +35,11 @@ function preload() {
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    suelo = height - 50;
-    video.position(0, 0);
-    video.size(width, height);
-    video.style("z-index", "-1");
-    video.style("object-fit", "cover"); // Evita estirado en móviles
-    nuevoCapibara();
+    ajustarFondo();
+    capibara = new Capibara(random(capibaraImgs)); // Se crea un solo capibara
 
-    botonMusica = createButton("Pausame");
-    botonMusica.position(width / 2 - 50, height - 100);
+    botonMusica = createButton("Pause");
+    botonMusica.position(imgX + imgWidth - 120, imgY + imgHeight - 80); // Posición encima de la firma
     botonMusica.style("background-color", "#8B0000");
     botonMusica.style("color", "white");
     botonMusica.style("border", "none");
@@ -65,30 +51,33 @@ function setup() {
 }
 
 function draw() {
-    if (!videoCargado) {
-        background(0);
-        fill(255);
-        textSize(32);
-        textAlign(CENTER, CENTER);
-        text("Cargando...", width / 2, height / 2);
-        return;
-    }
+    background(0);
+    ajustarFondo();
+    image(fondo, imgX, imgY, imgWidth, imgHeight);
 
-    image(video, 0, 0, width, height);
-
-    for (let capibara of capibaras) {
-        capibara.mover();
-        capibara.mostrar();
-        capibara.aplicarGravedad();
-    }
+    capibara.mover();
+    capibara.mostrar();
+    capibara.aplicarGravedad();
 
     if (mensajeActual !== "") {
         drawHeart(mensajeX, mensajeY, tamanoCorazon, colorCorazon);
+        // Ajusté la alineación del texto y agregué saltos de línea si es necesario.
         fill("white");
-        textSize(16);
+        textSize(13);
         textAlign(CENTER, CENTER);
-        text(mensajeActual, mensajeX, mensajeY - 5);
+        let textoDividido = mensajeActual.split(" ");
+        let lineHeight = 20;
+        for (let i = 0; i < textoDividido.length; i++) {
+            text(textoDividido[i], mensajeX, mensajeY - 17 + (i * lineHeight));
+        }
+
     }
+
+    // Contador de saltos
+    fill("white");
+    textSize(24);
+    textAlign(LEFT, TOP);
+    text(`Besos a cobrar: ${contadorSaltos}`, imgX + 20, imgY + 10);
 }
 
 let musicaIniciada = false;
@@ -117,44 +106,37 @@ function toggleMusica() {
     if (musicaPausada) {
         sonido.play();
         musicaPausada = false;
-        botonMusica.html("Te amo!❤️");
+        botonMusica.html("Te amo!");
         botonMusica.style("background-color", "#800080");
     } else {
         sonido.pause();
         musicaPausada = true;
-        botonMusica.html("Pausame");
+        botonMusica.html("Hermosa");
         botonMusica.style("background-color", "#8B0000");
     }
 }
 
 function mousePressed() {
-    if (mouseY > height - 150) return;
-    if (capibaras.length > 0) {
-        capibaras[capibaras.length - 1].saltar();
-        mostrarCumplido();
-    }
+    if (mouseY > imgY + imgHeight - 150) return;
+    capibara.saltar();
+    contadorSaltos++;
+    mostrarCumplido();
 }
 
 function touchStarted() {
-    if (mouseY > height - 150) return;
-    if (capibaras.length > 0) {
-        capibaras[capibaras.length - 1].saltar();
-        mostrarCumplido();
-    }
+    if (mouseY > imgY + imgHeight - 150) return;
+    capibara.saltar();
+    contadorSaltos++;
+    mostrarCumplido();
     return false;
-}
-
-function nuevoCapibara() {
-    let img = random(capibaraImgs);
-    capibaras.push(new Capibara(img));
 }
 
 function mostrarCumplido() {
     mensajeActual = random(cumplidos);
     colorCorazon = random(coloresCorazon);
-    colorTexto = "white"; // Siempre blanco para mejor visibilidad
-    mensajeX = random(width * 0.3, width * 0.7);
-    mensajeY = random(height * 0.1, height * 0.3);
+    colorTexto = "white";
+    mensajeX = random(imgX + imgWidth * 0.2, imgX + imgWidth * 0.8);
+    mensajeY = random(imgY + imgHeight * 0.1, imgY + imgHeight * 0.3);
 }
 
 function drawHeart(x, y, size, color) {
@@ -169,29 +151,53 @@ function drawHeart(x, y, size, color) {
     endShape(CLOSE);
 }
 
+function ajustarFondo() {
+    let imgRatio = fondo.width / fondo.height;
+    let screenRatio = width / height;
+
+    if (screenRatio > imgRatio) {
+        imgWidth = height * imgRatio;
+        imgHeight = height;
+    } else {
+        imgWidth = width;
+        imgHeight = width / imgRatio;
+    }
+
+    imgX = (width - imgWidth) / 2;
+    imgY = (height - imgHeight) / 2;
+}
+
 class Capibara {
     constructor(imagen) {
         this.img = imagen;
-        this.x = 50;
-        this.y = height - 120;
+        this.x = imgX + 10;
+        this.y = imgY + imgHeight - 120;
         this.velX = 2;
         this.velY = 0;
         this.gravedad = 0.6;
-        this.salto = -15;
+        this.saltoBase = -15;
         this.enSuelo = true;
+
+        // Movimiento automático para caminar con saltitos
+        setInterval(() => {
+            if (this.enSuelo) {
+                this.velY = random(-3, -1.5); // Pequeños saltitos simulando caminar
+            }
+        }, 500);
     }
 
     mover() {
         this.x += this.velX;
-        if (this.x > width) {
-            nuevoCapibara();
-            capibaras.shift();
+        if (this.x > imgX + imgWidth) {
+            this.x = imgX + 10; // Reinicia cuando sale del área visible
+            this.img = random(capibaraImgs); // Cambia de imagen al reiniciar
         }
     }
+    
 
     saltar() {
         if (this.enSuelo) {
-            this.velY = this.salto;
+            this.velY = random(this.saltoBase - 5, this.saltoBase + 5); // Salto con altura variable
             this.enSuelo = false;
         }
     }
@@ -199,8 +205,8 @@ class Capibara {
     aplicarGravedad() {
         this.y += this.velY;
         this.velY += this.gravedad;
-        if (this.y >= suelo - 70) {
-            this.y = suelo - 70;
+        if (this.y >= imgY + imgHeight - 70) {
+            this.y = imgY + imgHeight - 70;
             this.velY = 0;
             this.enSuelo = true;
         }
