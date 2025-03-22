@@ -19,7 +19,6 @@ let mensajeX, mensajeY;
 let colorCorazon;
 let colorTexto;
 let videoCargado = false;
-let musicaIniciada = false;
 let tamanoCorazon = 3.5; // Se redujo el tamaño del corazón
 let capibaraTamano = 130;
 let botonMusica;
@@ -93,21 +92,42 @@ function draw() {
     }
 }
 
-function toggleMusica() {
-    userStartAudio();  // 🔹 Esto desbloquea el audio en iOS/Safari
+let musicaIniciada = false;
+let musicaPausada = false;
 
-    if (musicaIniciada) {
-        sonido.stop();  // 🔹 Reinicia la canción desde el principio al detenerla
-        musicaIniciada = false;
-        botonMusica.html("Tócame");
-        botonMusica.style("background-color", "#8B0000");
-    } else {
-        sonido.stop();   // 🔹 Asegura que la canción empiece desde el inicio
+function iniciarMusica() {
+    if (!musicaIniciada) {
+        userStartAudio(); // 🔹 Desbloquea audio en iOS/Safari
+        sonido.play();
         sonido.setVolume(0.5);
-        sonido.play();   // 🔹 En vez de loop(), usa play() para iniciar correctamente en iOS
         musicaIniciada = true;
+        musicaPausada = false;
+
+        // 🔹 Eliminamos todos los listeners para evitar loops
+        document.removeEventListener("click", iniciarMusica);
+        document.removeEventListener("touchstart", iniciarMusica);
+        document.removeEventListener("scroll", iniciarMusica);
+    }
+}
+
+// 🔹 Detecta la primera interacción del usuario con la página
+document.addEventListener("click", iniciarMusica);
+document.addEventListener("touchstart", iniciarMusica);
+document.addEventListener("scroll", iniciarMusica);
+
+function toggleMusica() {
+    if (!musicaIniciada) return; // 🔹 No hacer nada si la música no ha empezado
+
+    if (musicaPausada) {
+        sonido.play();  // 🔹 Continúa desde donde se pausó
+        musicaPausada = false;
         botonMusica.html("Te amo");
         botonMusica.style("background-color", "#800080");
+    } else {
+        sonido.pause(); // 🔹 Pausa sin reiniciar
+        musicaPausada = true;
+        botonMusica.html("Tócame");
+        botonMusica.style("background-color", "#8B0000");
     }
 }
 
