@@ -3,14 +3,14 @@ let sonido;
 let capibaras = [];
 let capibaraImgs = [];
 let cumplidos = [
-    "¡Eres hermosa! 💖",
-    "Tu sonrisa ilumina mi día! 😊",
-    "Eres única y especial! 🌟",
-    "Tienes un corazón increíble! ❤️",
-    "Siempre alegras mi mundo! ✨",
-    "Eres una estrellaa en mi vida! 🌟",,
-    "Siempre haces que todo sea mejor! 💕",
-    "Te amo Camila! 💕"
+    "¡Eres muy hermosa! 😍",
+    "Amo Tu sonrisa! 😊",
+    "Eres increíble! 😘",
+    "Tienes un corazón muy bonito! 🤍",
+    "Siempre alegras mi día! ✨",
+    "Eres una estrella! 🌟",
+    "Siempre haces que todo sea mejor! 😎",
+    "Te amo mucho Camila! ❤️"
 ];
 let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#FFD700", "#9400D3"];
 let suelo;
@@ -20,7 +20,7 @@ let colorCorazon;
 let colorTexto;
 let videoCargado = false;
 let musicaIniciada = false;
-let tamanoCorazon = 7;
+let tamanoCorazon = 3.5; // Se redujo el tamaño del corazón
 let capibaraTamano = 130;
 let botonMusica;
 
@@ -31,6 +31,12 @@ function preload() {
         video.volume(0.5);
         video.show();
     });
+    
+    // Configuración para iPhone/iPad
+    video.attribute("playsinline", "true");
+    video.attribute("muted", "true"); 
+    video.play();
+    
     video.hide();
 
     sonido = loadSound("musica.mp3");
@@ -89,19 +95,20 @@ function draw() {
 
 function toggleMusica() {
     if (musicaIniciada) {
-        sonido.pause();
+        sonido.stop();  // 🔹 Usa stop() en lugar de pause() para reiniciar la canción cuando se active de nuevo
         musicaIniciada = false;
         botonMusica.html("Tócame");
         botonMusica.style("background-color", "#8B0000");
     } else {
-        userStartAudio();
-        sonido.loop();
+        userStartAudio(); // 🔹 Necesario para desbloquear audio en Safari/iOS
         sonido.setVolume(0.5);
+        sonido.loop();  // 🔹 Solo usa loop(), sin play() para evitar el ciclo
         musicaIniciada = true;
         botonMusica.html("Te amo");
         botonMusica.style("background-color", "#800080");
     }
 }
+
 
 function mousePressed() {
     if (mouseY > height - 150) return;
