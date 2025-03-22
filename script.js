@@ -13,7 +13,7 @@ let cumplidos = [
     "Te amo mucho Camila! ❤️"
 ];
 
-let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#FFD700", "#9400D3"];
+let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#9400D3"];
 let mensajeActual = "";
 let mensajeX, mensajeY;
 let colorCorazon;
@@ -39,8 +39,8 @@ function setup() {
     capibara = new Capibara(random(capibaraImgs)); // Se crea un solo capibara
 
     botonMusica = createButton("Pause");
-    botonMusica.position(imgX + imgWidth - 120, imgY + imgHeight - 80); // Posición encima de la firma
-    botonMusica.style("background-color", "#8B0000");
+    botonMusica.position(imgX + imgWidth - 120, imgY + imgHeight - 80);
+    botonMusica.style("background-color", "rgba(139, 0, 0, 0.7)"); // 🔹 Transparencia (70% de opacidad)
     botonMusica.style("color", "white");
     botonMusica.style("border", "none");
     botonMusica.style("padding", "15px 30px");
@@ -51,7 +51,8 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    let colorFondo = fondo.get(floor(fondo.width / 2), floor(fondo.height / 2)); // Obtiene un color central del fondo
+    background(colorFondo); // 🔹 Cambia el color de los bordes negros al color del fondo
     ajustarFondo();
     image(fondo, imgX, imgY, imgWidth, imgHeight);
 
@@ -61,23 +62,26 @@ function draw() {
 
     if (mensajeActual !== "") {
         drawHeart(mensajeX, mensajeY, tamanoCorazon, colorCorazon);
-        // Ajusté la alineación del texto y agregué saltos de línea si es necesario.
+        
+        // Ajuste de texto más ancho dentro del corazón
         fill("white");
-        textSize(13);
+        textSize(18);
         textAlign(CENTER, CENTER);
-        let textoDividido = mensajeActual.split(" ");
-        let lineHeight = 20;
+        let maxLineWidth = tamanoCorazon * 18; // Ajuste según tamaño del corazón
+        let textoDividido = splitText(mensajeActual, maxLineWidth);
+    
+        let lineHeight = 25;
         for (let i = 0; i < textoDividido.length; i++) {
-            text(textoDividido[i], mensajeX, mensajeY - 17 + (i * lineHeight));
+            text(textoDividido[i], mensajeX, mensajeY + 10 - (textoDividido.length - 1) * (lineHeight / 2) + (i * lineHeight));
         }
-
     }
+    
 
     // Contador de saltos
     fill("white");
-    textSize(24);
+    textSize(18);
     textAlign(LEFT, TOP);
-    text(`Besos a cobrar: ${contadorSaltos}`, imgX + 20, imgY + 10);
+    text(`Cada salto, un Beso: ${contadorSaltos}`, imgX + 20, imgY + 10);
 }
 
 let musicaIniciada = false;
@@ -107,12 +111,12 @@ function toggleMusica() {
         sonido.play();
         musicaPausada = false;
         botonMusica.html("Te amo!");
-        botonMusica.style("background-color", "#800080");
+        botonMusica.style("background-color", "rgba(128, 0, 128, 0.7)"); // 🔹 Púrpura con 70% de opacidad
     } else {
         sonido.pause();
         musicaPausada = true;
         botonMusica.html("Hermosa");
-        botonMusica.style("background-color", "#8B0000");
+        botonMusica.style("background-color", "rgba(139, 0, 0, 0.7)"); // 🔹 Rojo oscuro con 70% de opacidad
     }
 }
 
@@ -135,21 +139,28 @@ function mostrarCumplido() {
     mensajeActual = random(cumplidos);
     colorCorazon = random(coloresCorazon);
     colorTexto = "white";
+
+    // 🔹 Ajustar la posición del corazón para evitar el texto de arriba
+    let margenSuperior = imgY + 50; // 🔹 Evita que los corazones aparezcan muy arriba
+    let margenInferior = imgY + imgHeight * 0.6; // 🔹 Permite que los corazones aparezcan más abajo
+
     mensajeX = random(imgX + imgWidth * 0.2, imgX + imgWidth * 0.8);
-    mensajeY = random(imgY + imgHeight * 0.1, imgY + imgHeight * 0.3);
+    mensajeY = random(margenSuperior, margenInferior); // 🔹 Limita la posición en Y
 }
+
 
 function drawHeart(x, y, size, color) {
     fill(color);
     noStroke();
     beginShape();
     for (let i = 0; i < TWO_PI; i += 0.1) {
-        let px = x + size * 16 * pow(sin(i), 3);
-        let py = y - size * (13 * cos(i) - 5 * cos(2 * i) - 2 * cos(3 * i) - cos(4 * i));
+        let px = x + size * 18 * pow(sin(i), 3); // 🔹 Hacer el corazón más ancho
+        let py = y - size * (12 * cos(i) - 5 * cos(2 * i) - 2 * cos(3 * i) - cos(4 * i)); // 🔹 Hacerlo un poco más corto
         vertex(px, py);
     }
     endShape(CLOSE);
 }
+
 
 function ajustarFondo() {
     let imgRatio = fondo.width / fondo.height;
@@ -166,6 +177,28 @@ function ajustarFondo() {
     imgX = (width - imgWidth) / 2;
     imgY = (height - imgHeight) / 2;
 }
+
+function splitText(text, maxWidth) {
+    let words = text.split(" ");
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+        let testLine = currentLine + " " + words[i];
+        let testWidth = textWidth(testLine);
+
+        if (testWidth > maxWidth) {
+            lines.push(currentLine);
+            currentLine = words[i];
+        } else {
+            currentLine = testLine;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
+
+
 
 class Capibara {
     constructor(imagen) {
