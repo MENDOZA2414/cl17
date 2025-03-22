@@ -3,7 +3,7 @@ let sonido;
 let capibaras = [];
 let capibaraImgs = [];
 let cumplidos = [
-    "¡Eres muy hermosa! 😍",
+    "\u00a1Eres muy hermosa! 😍",
     "Amo Tu sonrisa! 😊",
     "Eres increíble! 😘",
     "Tienes un corazón muy bonito! 🤍",
@@ -19,8 +19,8 @@ let mensajeX, mensajeY;
 let colorCorazon;
 let colorTexto;
 let videoCargado = false;
-let tamanoCorazon = 3.5; // Se redujo el tamaño del corazón
-let capibaraTamano = 130;
+let tamanoCorazon = 5;
+let capibaraTamano = 110;
 let botonMusica;
 
 function preload() {
@@ -31,11 +31,9 @@ function preload() {
         video.show();
     });
     
-    // Configuración para iPhone/iPad
     video.attribute("playsinline", "true");
-    video.attribute("muted", "true"); 
+    video.attribute("muted", "true");
     video.play();
-    
     video.hide();
 
     sonido = loadSound("musica.mp3");
@@ -51,9 +49,10 @@ function setup() {
     video.position(0, 0);
     video.size(width, height);
     video.style("z-index", "-1");
+    video.style("object-fit", "cover"); // Evita estirado en móviles
     nuevoCapibara();
 
-    botonMusica = createButton("Tócame");
+    botonMusica = createButton("Pausame");
     botonMusica.position(width / 2 - 50, height - 100);
     botonMusica.style("background-color", "#8B0000");
     botonMusica.style("color", "white");
@@ -85,7 +84,7 @@ function draw() {
 
     if (mensajeActual !== "") {
         drawHeart(mensajeX, mensajeY, tamanoCorazon, colorCorazon);
-        fill(colorTexto);
+        fill("white");
         textSize(16);
         textAlign(CENTER, CENTER);
         text(mensajeActual, mensajeX, mensajeY - 5);
@@ -97,40 +96,36 @@ let musicaPausada = false;
 
 function iniciarMusica() {
     if (!musicaIniciada) {
-        userStartAudio(); // 🔹 Desbloquea audio en iOS/Safari
+        userStartAudio();
         sonido.play();
         sonido.setVolume(0.5);
         musicaIniciada = true;
         musicaPausada = false;
-
-        // 🔹 Eliminamos todos los listeners para evitar loops
         document.removeEventListener("click", iniciarMusica);
         document.removeEventListener("touchstart", iniciarMusica);
         document.removeEventListener("scroll", iniciarMusica);
     }
 }
 
-// 🔹 Detecta la primera interacción del usuario con la página
 document.addEventListener("click", iniciarMusica);
 document.addEventListener("touchstart", iniciarMusica);
 document.addEventListener("scroll", iniciarMusica);
 
 function toggleMusica() {
-    if (!musicaIniciada) return; // 🔹 No hacer nada si la música no ha empezado
+    if (!musicaIniciada) return;
 
     if (musicaPausada) {
-        sonido.play();  // 🔹 Continúa desde donde se pausó
+        sonido.play();
         musicaPausada = false;
-        botonMusica.html("Te amo");
+        botonMusica.html("Te amo!❤️");
         botonMusica.style("background-color", "#800080");
     } else {
-        sonido.pause(); // 🔹 Pausa sin reiniciar
+        sonido.pause();
         musicaPausada = true;
-        botonMusica.html("Tócame");
+        botonMusica.html("Pausame");
         botonMusica.style("background-color", "#8B0000");
     }
 }
-
 
 function mousePressed() {
     if (mouseY > height - 150) return;
@@ -157,7 +152,7 @@ function nuevoCapibara() {
 function mostrarCumplido() {
     mensajeActual = random(cumplidos);
     colorCorazon = random(coloresCorazon);
-    colorTexto = colorCorazon === "#FFD700" ? "#000" : "#FFF";
+    colorTexto = "white"; // Siempre blanco para mejor visibilidad
     mensajeX = random(width * 0.3, width * 0.7);
     mensajeY = random(height * 0.1, height * 0.3);
 }
