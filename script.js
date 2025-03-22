@@ -9,7 +9,8 @@ let cumplidos = [
     "Tienes un corazón increíble! ❤️",
     "Siempre alegras mi mundo! ✨",
     "Eres una estrellaa en mi vida! 🌟",,
-    "Siempre haces que todo sea mejor! 💕"
+    "Siempre haces que todo sea mejor! 💕",
+    "Te amo Camila! 💕"
 ];
 let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#FFD700", "#9400D3"];
 let suelo;
