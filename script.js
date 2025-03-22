@@ -5,10 +5,10 @@ let capibaraImgs = [];
 let cumplidos = [
     "¡Eres hermosa! 💖",
     "Tu sonrisa ilumina mi día! 😊",
-    "Eres única y especial! 🌸",
+    "Eres única y especial! 🌟",
     "Tienes un corazón increíble! ❤️",
     "Siempre alegras mi mundo! ✨",
-    "Eres más brillante que las estrellas! 🌟",
+    "Eres una estrellaa en mi vida! 🌟",,
     "Siempre haces que todo sea mejor! 💕"
 ];
 let coloresCorazon = ["#FF69B4", "#FF1493", "#DC143C", "#FF4500", "#FFD700", "#9400D3"];
